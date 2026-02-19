@@ -40,7 +40,13 @@ The extension fetches route data from the [Lost In Kalymnos](https://lostinkalym
 
 ## Screenshots
 
-*Coming soon*
+**Route page** — shade panel on a theCrag route:
+
+![Route page screenshot](screenshot_Route.png)
+
+**Area page** — crag overview with bars for all routes:
+
+![Area page screenshot](screenshot_CragOverview.png)
 
 ## Links
 

@@ -23,6 +23,7 @@
     "https://lostinkalymnos.com/*"
   ],
   "icons": {
-    "48": "icon48.png"
+    "48": "icon48.png",
+    "128": "icon128.png"
   }
 }
