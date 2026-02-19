@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Lost In Kalymnos — Shade on theCrag",
+  "version": "1.0",
+  "description": "See sun and shade times for climbing routes on theCrag.com, powered by Lost In Kalymnos.",
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.thecrag.com/*/route/*",
+        "*://www.thecrag.com/route/*",
+        "*://www.thecrag.com/*/area/*",
+        "*://www.thecrag.com/area/*"
+      ],
+      "js": ["suncalc.js", "shade-overlay.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [],
+  "host_permissions": [
+    "https://lostinkalymnos.com/*"
+  ],
+  "icons": {
+    "48": "icon48.png"
+  }
+}
