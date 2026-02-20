@@ -169,6 +169,18 @@
     return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: tz });
   }
 
+  function createNowLabel(tz) {
+    const nowPct = getPos(new Date(), tz);
+    if (nowPct <= 0 || nowPct >= 100) return null;
+    const row = document.createElement("div");
+    row.style.cssText = "position:relative;height:14px;";
+    const lbl = document.createElement("span");
+    lbl.style.cssText = "position:absolute;font-size:10px;font-weight:600;color:#EF4444;transform:translateX(-50%);left:" + nowPct + "%;bottom:0;";
+    lbl.textContent = "now";
+    row.appendChild(lbl);
+    return row;
+  }
+
   function createBar(sunWindow, tz, height) {
     const bar = document.createElement("div");
     bar.style.cssText =
@@ -212,7 +224,7 @@
   function createHourLabels() {
     const labels = document.createElement("div");
     labels.style.cssText = "position:relative;height:14px;";
-    for (let h = BAR_START; h <= BAR_END; h += 2) {
+    for (let h = BAR_START; h <= BAR_END; h += 1) {
       const pct = ((h - BAR_START) / BAR_HOURS) * 100;
       const lbl = document.createElement("span");
       lbl.style.cssText = "position:absolute;font-size:9px;color:#888;transform:translateX(-50%);left:" + pct + "%;";
@@ -291,7 +303,9 @@
     }
     panel.appendChild(sunTimes);
 
-    // Bar + labels
+    // Now label + bar + hour labels
+    const nowLabel = createNowLabel(tz);
+    if (nowLabel) panel.appendChild(nowLabel);
     panel.appendChild(createBar(sunWindow, tz, 24));
     panel.appendChild(createHourLabels());
 
@@ -367,6 +381,9 @@
     // Sort by topoNum/order
     entries.sort((a, b) => (a.routeEntry.topoNum ?? a.routeEntry.order ?? Infinity) - (b.routeEntry.topoNum ?? b.routeEntry.order ?? Infinity));
 
+    // Now label above first bar
+    const nowLabel = createNowLabel(tz);
+
     // Composite "best shade" bar
     if (entries.length > 1 && sunriseAll && sunsetAll) {
       const compositeLabel = document.createElement("div");
@@ -375,6 +392,8 @@
         '<span style="font-size:11px;font-weight:600;color:#333;">Best shade</span>' +
         '<span style="font-size:10px;color:#aaa;">move between routes</span>';
       panel.appendChild(compositeLabel);
+
+      if (nowLabel) panel.appendChild(nowLabel);
 
       const compositeSW = computeComposite(entries, sunriseAll, sunsetAll);
       panel.appendChild(createBar(compositeSW, tz, 20));
@@ -385,6 +404,7 @@
     }
 
     // Per-route bars
+    let firstRoute = true;
     for (const e of entries) {
       const row = document.createElement("div");
       row.style.cssText = "margin-bottom:4px;";
@@ -411,6 +431,10 @@
       nameRow.appendChild(nameSpan);
       nameRow.appendChild(timesSpan);
       row.appendChild(nameRow);
+      if (firstRoute && nowLabel && !nowLabel.parentNode) {
+        row.insertBefore(nowLabel, null);
+      }
+      firstRoute = false;
       row.appendChild(createBar(e.sunWindow, tz, 18));
       panel.appendChild(row);
     }
