@@ -221,17 +221,45 @@
     return bar;
   }
 
-  function createHourLabels() {
-    const labels = document.createElement("div");
+  function createTickRulerAndLabels() {
+    const wrapper = document.createElement("div");
+
+    // Tick ruler
+    const ruler = document.createElement("div");
+    ruler.style.cssText = "position:relative;height:8px;margin-top:2px;";
+
+    // Horizontal line across top
+    const line = document.createElement("div");
+    line.style.cssText = "position:absolute;left:0;right:0;top:0;height:1px;background:rgba(0,0,0,0.15);";
+    ruler.appendChild(line);
+
+    // Quarter-hour tick marks
+    var totalTicks = (BAR_END - BAR_START) * 4;
+    for (var i = 0; i <= totalTicks; i++) {
+      var pct = (i / totalTicks) * 100;
+      var isHour = i % 4 === 0;
+      var isHalf = i % 4 === 2;
+      var tick = document.createElement("div");
+      var h = isHour ? "6px" : isHalf ? "4px" : "3px";
+      var op = isHour ? "0.4" : "0.25";
+      tick.style.cssText = "position:absolute;top:0;width:1px;background:rgba(0,0,0," + op + ");left:" + pct + "%;height:" + h + ";";
+      ruler.appendChild(tick);
+    }
+    wrapper.appendChild(ruler);
+
+    // Hour labels
+    var labels = document.createElement("div");
     labels.style.cssText = "position:relative;height:14px;";
-    for (let h = BAR_START; h <= BAR_END; h += 1) {
-      const pct = ((h - BAR_START) / BAR_HOURS) * 100;
-      const lbl = document.createElement("span");
-      lbl.style.cssText = "position:absolute;font-size:9px;color:#888;transform:translateX(-50%);left:" + pct + "%;";
-      lbl.textContent = h;
+    for (var hr = BAR_START; hr <= BAR_END; hr += 1) {
+      var lPct = ((hr - BAR_START) / BAR_HOURS) * 100;
+      var lbl = document.createElement("span");
+      lbl.style.cssText = "position:absolute;font-size:9px;color:#888;transform:translateX(-50%);left:" + lPct + "%;";
+      lbl.textContent = hr;
       labels.appendChild(lbl);
     }
-    return labels;
+    wrapper.appendChild(labels);
+
+    return wrapper;
   }
 
   function createPanelShell(dateStr) {
@@ -307,7 +335,7 @@
     const nowLabel = createNowLabel(tz);
     if (nowLabel) panel.appendChild(nowLabel);
     panel.appendChild(createBar(sunWindow, tz, 24));
-    panel.appendChild(createHourLabels());
+    panel.appendChild(createTickRulerAndLabels());
 
     // Link
     const linkRow = document.createElement("div");
@@ -440,7 +468,7 @@
     }
 
     // Hour labels
-    panel.appendChild(createHourLabels());
+    panel.appendChild(createTickRulerAndLabels());
 
     // Link
     const linkRow = document.createElement("div");
