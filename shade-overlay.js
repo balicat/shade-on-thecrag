@@ -224,29 +224,6 @@
   function createTickRulerAndLabels() {
     const wrapper = document.createElement("div");
 
-    // Tick ruler
-    const ruler = document.createElement("div");
-    ruler.style.cssText = "position:relative;height:8px;margin-top:2px;";
-
-    // Horizontal line across top
-    const line = document.createElement("div");
-    line.style.cssText = "position:absolute;left:0;right:0;top:0;height:1px;background:rgba(0,0,0,0.15);";
-    ruler.appendChild(line);
-
-    // Quarter-hour tick marks
-    var totalTicks = (BAR_END - BAR_START) * 4;
-    for (var i = 0; i <= totalTicks; i++) {
-      var pct = (i / totalTicks) * 100;
-      var isHour = i % 4 === 0;
-      var isHalf = i % 4 === 2;
-      var tick = document.createElement("div");
-      var h = isHour ? "6px" : isHalf ? "4px" : "3px";
-      var op = isHour ? "0.4" : "0.25";
-      tick.style.cssText = "position:absolute;top:0;width:1px;background:rgba(0,0,0," + op + ");left:" + pct + "%;height:" + h + ";";
-      ruler.appendChild(tick);
-    }
-    wrapper.appendChild(ruler);
-
     // Hour labels
     var labels = document.createElement("div");
     labels.style.cssText = "position:relative;height:14px;";
@@ -306,23 +283,22 @@
     // Sun summary
     const sunTimes = document.createElement("div");
     sunTimes.style.cssText = "margin-bottom:8px;";
-    if (sunWindow.sunIntervals.length > 0) {
-      const parts = sunWindow.sunIntervals.map((iv) => fmtTime(iv.start, tz) + " – " + fmtTime(iv.end, tz));
-      const sunLabel = document.createElement("div");
-      sunLabel.style.cssText = "font-size:13px;color:#333;margin-bottom:4px;";
-      sunLabel.innerHTML = '<span style="color:#E65100;font-weight:600;">Sun</span> ' +
-        parts.join(' <span style="color:#aaa;">\u00b7</span> ');
-      sunTimes.appendChild(sunLabel);
-
-      const sunHrs = Math.floor(sunWindow.sunMinutes / 60);
-      const sunMins = Math.round(sunWindow.sunMinutes % 60);
-      const totalDaylight = sunWindow.sunrise && sunWindow.sunset
-        ? (sunWindow.sunset.getTime() - sunWindow.sunrise.getTime()) / (1000 * 60) : 0;
-      const shadeMins = Math.round(totalDaylight - sunWindow.sunMinutes);
-      const stats = document.createElement("div");
-      stats.style.cssText = "font-size:11px;color:#888;";
-      stats.textContent = sunHrs + "h " + sunMins + "m sun \u00b7 " + Math.floor(shadeMins / 60) + "h " + (shadeMins % 60) + "m shade";
-      sunTimes.appendChild(stats);
+    if (sunWindow.sunIntervals.length > 0 && sunWindow.sunrise && sunWindow.sunset) {
+      const shadeRanges = [];
+      let prev = sunWindow.sunrise;
+      for (const iv of sunWindow.sunIntervals) {
+        if (iv.start.getTime() - prev.getTime() > 2 * 60 * 1000) {
+          shadeRanges.push(fmtTime(prev, tz) + " – " + fmtTime(iv.start, tz));
+        }
+        prev = iv.end;
+      }
+      if (sunWindow.sunset.getTime() - prev.getTime() > 2 * 60 * 1000) {
+        shadeRanges.push(fmtTime(prev, tz) + " – " + fmtTime(sunWindow.sunset, tz));
+      }
+      const shadeLabel = document.createElement("div");
+      shadeLabel.style.cssText = "font-size:13px;color:#333;margin-bottom:4px;";
+      shadeLabel.textContent = shadeRanges.length > 0 ? "Shade\u2003" + shadeRanges.join("\u2003") : "No shade today";
+      sunTimes.appendChild(shadeLabel);
     } else {
       const noSun = document.createElement("div");
       noSun.style.cssText = "font-size:13px;color:#666;";
@@ -387,22 +363,19 @@
 
     const summaryDiv = document.createElement("div");
     summaryDiv.style.cssText = "font-size:12px;color:#555;margin-bottom:10px;";
-    if (firstStarts.length > 0) {
+    if (firstStarts.length > 0 && sunriseAll && sunsetAll) {
       const maxStart = new Date(Math.max(...firstStarts.map((d) => d.getTime())));
       const minEnd = new Date(Math.min(...lastEnds.map((d) => d.getTime())));
-      const allSunFromSunrise = sunriseAll && Math.abs(maxStart.getTime() - sunriseAll.getTime()) < 2 * 60 * 1000;
-      const maxEnd = new Date(Math.max(...lastEnds.map((d) => d.getTime())));
-      const sunUntilSunset = sunsetAll && Math.abs(maxEnd.getTime() - sunsetAll.getTime()) < 2 * 60 * 1000;
-      const parts = [];
-      if (!allSunFromSunrise) parts.push("Shade until " + fmtTime(maxStart, tz));
-      if (sunUntilSunset && sunsetAll) {
-        parts.push("sun until sunset at " + fmtTime(sunsetAll, tz));
-      } else if (sunsetAll) {
-        parts.push("shade from " + fmtTime(minEnd, tz) + " until sunset at " + fmtTime(sunsetAll, tz));
+      const shadeRanges = [];
+      if (maxStart.getTime() - sunriseAll.getTime() > 2 * 60 * 1000) {
+        shadeRanges.push(fmtTime(sunriseAll, tz) + " – " + fmtTime(maxStart, tz));
       }
-      summaryDiv.textContent = entries.length + " route" + (entries.length !== 1 ? "s" : "") + " \u00b7 " + parts.join(" \u00b7 ");
+      if (sunsetAll.getTime() - minEnd.getTime() > 2 * 60 * 1000) {
+        shadeRanges.push(fmtTime(minEnd, tz) + " – " + fmtTime(sunsetAll, tz));
+      }
+      summaryDiv.textContent = shadeRanges.length > 0 ? "Shade\u2003" + shadeRanges.join("\u2003") : "No shade today";
     } else {
-      summaryDiv.textContent = entries.length + " route" + (entries.length !== 1 ? "s" : "") + " \u00b7 No direct sun today";
+      summaryDiv.textContent = "No direct sun today";
     }
     panel.appendChild(summaryDiv);
 
