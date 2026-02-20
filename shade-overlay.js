@@ -11,81 +11,26 @@
 
   const today = formatDate(new Date());
 
-  bgFetch(API_BASE + "/data/profiles/routes.json")
-    .then((index) => {
-      if (routeMatch) {
-        return handleRoutePage(index, parseInt(routeMatch[1], 10));
-      } else {
-        return handleAreaPage(index, parseInt(areaMatch[1], 10));
-      }
-    })
-    .catch(() => {}); // Silently fail
-
-  // --- Route page: single route panel ---
-
-  function handleRoutePage(index, theCragId) {
-    const found = findRouteByTheCragId(index, theCragId);
-    if (!found) return;
-    return bgFetch(API_BASE + "/api/profiles/" + found.slug).then((profile) => {
-      const sunWindow = computeSunWindow(profile, today);
-      injectRoutePanel(profile, sunWindow, found.slug, today);
-    });
-  }
-
-  // --- Area page: multi-route crag panel ---
-
-  function handleAreaPage(index, theCragAreaId) {
-    const matched = findRoutesByAreaId(index, theCragAreaId);
-    if (matched.length === 0) return;
-    return Promise.all(
-      matched.map((m) =>
-        bgFetch(API_BASE + "/api/profiles/" + m.slug).then((profile) => ({
-          ...m,
-          profile,
-          sunWindow: computeSunWindow(profile, today),
-        }))
-      )
-    ).then((entries) => {
-      injectAreaPanel(entries, theCragAreaId, today);
-    });
-  }
-
-  // --- Lookup helpers ---
-
-  function findRouteByTheCragId(index, id) {
-    for (const region of index.regions) {
-      for (const crag of region.crags) {
-        for (const route of crag.routes) {
-          if (route.theCragId === id) {
-            return {
-              routeEntry: route,
-              cragEntry: crag,
-              slug: route.file.replace(".json", ""),
-            };
-          }
-        }
-      }
-    }
-    return null;
-  }
-
-  function findRoutesByAreaId(index, areaId) {
-    const results = [];
-    for (const region of index.regions) {
-      for (const crag of region.crags) {
-        if (crag.theCragAreaId === areaId) {
-          for (const route of crag.routes) {
-            results.push({
-              routeEntry: route,
-              cragEntry: crag,
-              cragName: crag.name,
-              slug: route.file.replace(".json", ""),
-            });
-          }
-        }
-      }
-    }
-    return results;
+  if (routeMatch) {
+    bgFetch(API_BASE + "/api/lookup?theCragId=" + routeMatch[1])
+      .then((data) => {
+        const sunWindow = computeSunWindow(data.profile, today);
+        injectRoutePanel(data.profile, sunWindow, data.slug, today);
+      })
+      .catch(() => {});
+  } else {
+    bgFetch(API_BASE + "/api/lookup?theCragAreaId=" + areaMatch[1])
+      .then((data) => {
+        const entries = data.routes.map((r) => ({
+          routeEntry: { name: r.routeName, theCragId: r.theCragId, topoNum: r.topoNum },
+          cragName: data.cragName,
+          slug: r.slug,
+          profile: r.profile,
+          sunWindow: computeSunWindow(r.profile, today),
+        }));
+        injectAreaPanel(entries, parseInt(areaMatch[1], 10), today);
+      })
+      .catch(() => {});
   }
 
   // --- API helper via background service worker (bypasses CORS) ---
