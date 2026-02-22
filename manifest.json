@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Lost In Kalymnos — Shade on theCrag",
-  "version": "1.1",
-  "description": "See sun and shade times for climbing routes on theCrag.com, powered by Lost In Kalymnos.",
+  "name": "SunShade — Shade on theCrag",
+  "version": "1.2",
+  "description": "See sun and shade times for climbing routes on theCrag.com, powered by sunshade.info.",
   "content_scripts": [
     {
       "matches": [
@@ -20,7 +20,7 @@
   },
   "permissions": [],
   "host_permissions": [
-    "https://lostinkalymnos.com/*"
+    "https://sunshade.info/*"
   ],
   "icons": {
     "48": "icon48.png",

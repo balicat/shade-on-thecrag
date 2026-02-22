@@ -1,8 +1,8 @@
-// Lost In Kalymnos — shade overlay for theCrag route & area pages
+// SunShade — shade overlay for theCrag route & area pages
 (function () {
   "use strict";
 
-  const API_BASE = "https://lostinkalymnos.com";
+  const API_BASE = "https://sunshade.info";
 
   // Detect page type
   const routeMatch = location.href.match(/\/route\/(\d+)/);
@@ -12,14 +12,14 @@
   const today = formatDate(new Date());
 
   if (routeMatch) {
-    bgFetch(API_BASE + "/api/lookup?theCragId=" + routeMatch[1])
+    bgFetch(API_BASE + "/api/thecrag/lookup?theCragId=" + routeMatch[1])
       .then((data) => {
         const sunWindow = computeSunWindow(data.profile, today);
         injectRoutePanel(data.profile, sunWindow, data.slug, today);
       })
       .catch(() => {});
   } else {
-    bgFetch(API_BASE + "/api/lookup?theCragAreaId=" + areaMatch[1])
+    bgFetch(API_BASE + "/api/thecrag/lookup?theCragAreaId=" + areaMatch[1])
       .then((data) => {
         const entries = data.routes.map((r) => ({
           routeEntry: { name: r.routeName, theCragId: r.theCragId, topoNum: r.topoNum },
@@ -241,7 +241,7 @@
 
   function createPanelShell(dateStr) {
     const panel = document.createElement("div");
-    panel.id = "lik-shade-panel";
+    panel.id = "sunshade-panel";
     panel.style.cssText =
       "background:#f7f8f9;border:1px solid #ddd;border-radius:12px;padding:16px;margin:16px 0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;";
 
@@ -250,7 +250,7 @@
 
     const logo = document.createElement("span");
     logo.innerHTML =
-      '<span style="font-size:14px;font-weight:700;color:#006B54;">Lost In Kalymnos</span>' +
+      '<span style="font-size:14px;font-weight:700;color:#D97706;">SunShade</span>' +
       ' <span style="font-size:11px;color:#888;font-weight:normal;">Shade Calculator</span>';
     header.appendChild(logo);
 
@@ -273,7 +273,7 @@
     // Make header link to shade page
     const logoSpan = panel.querySelector("span");
     const logoLink = document.createElement("a");
-    logoLink.href = API_BASE + "/shade?route=" + slug;
+    logoLink.href = API_BASE + "/thecrag?l3=" + slug;
     logoLink.target = "_blank";
     logoLink.rel = "noopener noreferrer";
     logoLink.style.cssText = "text-decoration:none;";
@@ -317,10 +317,10 @@
     const linkRow = document.createElement("div");
     linkRow.style.cssText = "text-align:right;margin-top:4px;";
     const link = document.createElement("a");
-    link.href = API_BASE + "/shade?route=" + slug;
+    link.href = API_BASE + "/thecrag?l3=" + slug;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
-    link.style.cssText = "font-size:11px;color:#006B54;text-decoration:none;font-weight:600;";
+    link.style.cssText = "font-size:11px;color:#D97706;text-decoration:none;font-weight:600;";
     link.textContent = "View sky chart \u2192";
     link.addEventListener("mouseenter", () => (link.style.textDecoration = "underline"));
     link.addEventListener("mouseleave", () => (link.style.textDecoration = "none"));
@@ -342,7 +342,7 @@
     const cragSlug = cragName.toLowerCase().replace(/\s+/g, "-");
     const logoSpan = panel.querySelector("span");
     const logoLink = document.createElement("a");
-    logoLink.href = API_BASE + "/shade?crag=" + cragSlug;
+    logoLink.href = API_BASE + "/thecrag?l2=" + cragSlug;
     logoLink.target = "_blank";
     logoLink.rel = "noopener noreferrer";
     logoLink.style.cssText = "text-decoration:none;";
@@ -462,10 +462,10 @@
     const linkRow = document.createElement("div");
     linkRow.style.cssText = "text-align:right;margin-top:4px;";
     const link = document.createElement("a");
-    link.href = API_BASE + "/shade?crag=" + cragSlug;
+    link.href = API_BASE + "/thecrag?l2=" + cragSlug;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
-    link.style.cssText = "font-size:11px;color:#006B54;text-decoration:none;font-weight:600;";
+    link.style.cssText = "font-size:11px;color:#D97706;text-decoration:none;font-weight:600;";
     link.textContent = "View all routes \u2192";
     link.addEventListener("mouseenter", () => (link.style.textDecoration = "underline"));
     link.addEventListener("mouseleave", () => (link.style.textDecoration = "none"));
