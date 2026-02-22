@@ -15,7 +15,7 @@
     bgFetch(API_BASE + "/api/thecrag/lookup?theCragId=" + routeMatch[1])
       .then((data) => {
         const sunWindow = computeSunWindow(data.profile, today);
-        injectRoutePanel(data.profile, sunWindow, data.slug, today);
+        injectRoutePanel(data.profile, sunWindow, data.slug, routeMatch[1], today);
       })
       .catch(() => {});
   } else {
@@ -266,14 +266,15 @@
 
   // --- Route page panel ---
 
-  function injectRoutePanel(profile, sunWindow, slug, dateStr) {
+  function injectRoutePanel(profile, sunWindow, slug, theCragId, dateStr) {
     const tz = profile.timezone;
     const panel = createPanelShell(dateStr);
+    const routeUrl = API_BASE + "/thecrag?l3=" + slug + "&routeId=" + theCragId;
 
     // Make header link to shade page
     const logoSpan = panel.querySelector("span");
     const logoLink = document.createElement("a");
-    logoLink.href = API_BASE + "/thecrag?l3=" + slug;
+    logoLink.href = routeUrl;
     logoLink.target = "_blank";
     logoLink.rel = "noopener noreferrer";
     logoLink.style.cssText = "text-decoration:none;";
@@ -317,7 +318,7 @@
     const linkRow = document.createElement("div");
     linkRow.style.cssText = "text-align:right;margin-top:4px;";
     const link = document.createElement("a");
-    link.href = API_BASE + "/thecrag?l3=" + slug;
+    link.href = routeUrl;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     link.style.cssText = "font-size:11px;color:#D97706;text-decoration:none;font-weight:600;";
