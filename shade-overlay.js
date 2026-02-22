@@ -379,8 +379,23 @@
     }
     panel.appendChild(summaryDiv);
 
-    // Sort by topoNum/order
-    entries.sort((a, b) => (a.routeEntry.topoNum ?? a.routeEntry.order ?? Infinity) - (b.routeEntry.topoNum ?? b.routeEntry.order ?? Infinity));
+    // Sort by topoNum/order (dotted sector numbers like "1.10" sort numerically)
+    entries.sort((a, b) => {
+      const aNum = a.routeEntry.topoNum ?? a.routeEntry.order;
+      const bNum = b.routeEntry.topoNum ?? b.routeEntry.order;
+      if (aNum != null && bNum != null) {
+        const pa = String(aNum).split(".").map(Number);
+        const pb = String(bNum).split(".").map(Number);
+        for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+          const diff = (pa[i] ?? 0) - (pb[i] ?? 0);
+          if (diff !== 0) return diff;
+        }
+        return 0;
+      }
+      if (aNum != null) return -1;
+      if (bNum != null) return 1;
+      return 0;
+    });
 
     // Now label above first bar
     const nowLabel = createNowLabel(tz);
