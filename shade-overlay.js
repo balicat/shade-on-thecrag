@@ -297,7 +297,7 @@
       }
       const shadeLabel = document.createElement("div");
       shadeLabel.style.cssText = "font-size:13px;color:#333;margin-bottom:4px;";
-      shadeLabel.innerHTML = shadeRanges.length > 0 ? "Shade\u2003" + shadeRanges.join("\u2003") : "No shade today";
+      shadeLabel.innerHTML = shadeRanges.length > 0 ? shadeRanges.join("\u2003") : "No shade today";
       sunTimes.appendChild(shadeLabel);
     } else {
       const noSun = document.createElement("div");
@@ -373,7 +373,7 @@
       if (sunsetAll.getTime() - minEnd.getTime() > 2 * 60 * 1000) {
         shadeRanges.push("<b>" + fmtTime(minEnd, tz) + " – " + fmtTime(sunsetAll, tz) + "</b>");
       }
-      summaryDiv.innerHTML = shadeRanges.length > 0 ? "Shade\u2003" + shadeRanges.join("\u2003") : "No shade today";
+      summaryDiv.innerHTML = shadeRanges.length > 0 ? shadeRanges.join("\u2003") : "No shade today";
     } else {
       summaryDiv.textContent = "No direct sun today";
     }
