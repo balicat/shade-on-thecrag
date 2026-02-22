@@ -288,16 +288,16 @@
       let prev = sunWindow.sunrise;
       for (const iv of sunWindow.sunIntervals) {
         if (iv.start.getTime() - prev.getTime() > 2 * 60 * 1000) {
-          shadeRanges.push(fmtTime(prev, tz) + " – " + fmtTime(iv.start, tz));
+          shadeRanges.push("<b>" + fmtTime(prev, tz) + " – " + fmtTime(iv.start, tz) + "</b>");
         }
         prev = iv.end;
       }
       if (sunWindow.sunset.getTime() - prev.getTime() > 2 * 60 * 1000) {
-        shadeRanges.push(fmtTime(prev, tz) + " – " + fmtTime(sunWindow.sunset, tz));
+        shadeRanges.push("<b>" + fmtTime(prev, tz) + " – " + fmtTime(sunWindow.sunset, tz) + "</b>");
       }
       const shadeLabel = document.createElement("div");
       shadeLabel.style.cssText = "font-size:13px;color:#333;margin-bottom:4px;";
-      shadeLabel.textContent = shadeRanges.length > 0 ? "Shade\u2003" + shadeRanges.join("\u2003") : "No shade today";
+      shadeLabel.innerHTML = shadeRanges.length > 0 ? "Shade\u2003" + shadeRanges.join("\u2003") : "No shade today";
       sunTimes.appendChild(shadeLabel);
     } else {
       const noSun = document.createElement("div");
@@ -368,12 +368,12 @@
       const minEnd = new Date(Math.min(...lastEnds.map((d) => d.getTime())));
       const shadeRanges = [];
       if (maxStart.getTime() - sunriseAll.getTime() > 2 * 60 * 1000) {
-        shadeRanges.push(fmtTime(sunriseAll, tz) + " – " + fmtTime(maxStart, tz));
+        shadeRanges.push("<b>" + fmtTime(sunriseAll, tz) + " – " + fmtTime(maxStart, tz) + "</b>");
       }
       if (sunsetAll.getTime() - minEnd.getTime() > 2 * 60 * 1000) {
-        shadeRanges.push(fmtTime(minEnd, tz) + " – " + fmtTime(sunsetAll, tz));
+        shadeRanges.push("<b>" + fmtTime(minEnd, tz) + " – " + fmtTime(sunsetAll, tz) + "</b>");
       }
-      summaryDiv.textContent = shadeRanges.length > 0 ? "Shade\u2003" + shadeRanges.join("\u2003") : "No shade today";
+      summaryDiv.innerHTML = shadeRanges.length > 0 ? "Shade\u2003" + shadeRanges.join("\u2003") : "No shade today";
     } else {
       summaryDiv.textContent = "No direct sun today";
     }
@@ -423,8 +423,8 @@
       const timesSpan = document.createElement("span");
       timesSpan.style.cssText = "font-size:11px;color:#888;";
       if (e.sunWindow.sunIntervals.length > 0) {
-        timesSpan.textContent = fmtTime(e.sunWindow.sunIntervals[0].start, tz) + " – " +
-          fmtTime(e.sunWindow.sunIntervals[e.sunWindow.sunIntervals.length - 1].end, tz);
+        timesSpan.innerHTML = "<b>" + fmtTime(e.sunWindow.sunIntervals[0].start, tz) + " – " +
+          fmtTime(e.sunWindow.sunIntervals[e.sunWindow.sunIntervals.length - 1].end, tz) + "</b>";
       } else {
         timesSpan.textContent = "no sun";
       }
