@@ -1,6 +1,6 @@
-# Shade on theCrag
+# SunShade — Shade on theCrag
 
-A Chrome extension that shows sun and shade times for climbing routes on [theCrag.com](https://www.thecrag.com), powered by the [Lost In Kalymnos](https://lostinkalymnos.com/shade) shade calculator.
+A Chrome extension that shows sun and shade times for climbing routes on [theCrag.com](https://www.thecrag.com), powered by the [SunShade](https://sunshade.info) platform.
 
 ## What it does
 
@@ -20,11 +20,9 @@ When you browse a route or area on theCrag that has a shade profile, the extensi
 
 If a route doesn't have a shade profile, nothing is shown — the extension is invisible.
 
-## Currently supported areas
+## Covered areas
 
-The shade calculator is currently being tested in **Leonidio, Greece**. Kalymnos profiles are coming April 2026.
-
-See all available routes at [lostinkalymnos.com/shade](https://lostinkalymnos.com/shade).
+Shade profiles currently cover **Leonidio** and **Kalymnos** (Greece), with Kalymnos coverage growing steadily. Browse every covered route at [sunshade.info/thecrag](https://sunshade.info/thecrag).
 
 ## Install
 
@@ -36,7 +34,7 @@ See all available routes at [lostinkalymnos.com/shade](https://lostinkalymnos.co
 
 ## How it works
 
-The extension fetches route data from the [Lost In Kalymnos](https://lostinkalymnos.com) API and computes sun/shade times for today using terrain profiles captured from the actual climbing locations. The terrain profile maps out the mountains, cliffs, and ridges that block the sun — so you get accurate shade times specific to each route, not just generic sunrise/sunset.
+Each route has a **terrain profile**: a 360° horizon silhouette captured at the actual climbing location, mapping out the mountains, cliffs and ridges that block the sun. The extension fetches the profile from the [SunShade API](https://sunshade.info), computes today's solar path with [SunCalc](https://github.com/mourner/suncalc), and intersects the two in your browser — so you get shade times specific to each route, not just generic sunrise/sunset.
 
 ## Screenshots
 
@@ -48,8 +46,16 @@ The extension fetches route data from the [Lost In Kalymnos](https://lostinkalym
 
 ![Area page screenshot](screenshot_CragOverview.png)
 
+**Sky chart** — the extension links each route to its full sky chart on sunshade.info:
+
+![Sky chart screenshot](screenshot_SkyChart.png)
+
 ## Links
 
-- [Lost In Kalymnos — Shade Calculator](https://lostinkalymnos.com/shade)
-- [How the shade calculator works](https://lostinkalymnos.com/shade/help)
-- [About the companion app](https://lostinkalymnos.com/shade/app)
+- [SunShade — sun and shade predictions for any outdoor location](https://sunshade.info)
+- [All covered theCrag routes](https://sunshade.info/thecrag)
+- [Lost In Kalymnos — Kalymnos climbing guide](https://lostinkalymnos.com)
+
+## License
+
+[MIT](LICENSE) — David Linton
